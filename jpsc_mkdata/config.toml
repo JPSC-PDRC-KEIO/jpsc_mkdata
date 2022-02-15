@@ -1,0 +1,31 @@
+title = "JPSC DataSet "
+
+[project]
+name = "JPSC data release"
+
+[dir]
+base = "jpsc_dataset"
+diffs = "diffs"
+[dir.data]
+base = "data"
+old_data = "old_data"
+update_data = "update_data"
+fixed_data = "fixed_width_data"
+user_data = "user_data"
+tape_formats = "tape_formats"
+[dir.editing]
+base = "editing/lists"
+file = "panel{wave}エディティングでの修正.xlsx"
+
+
+[data_info]
+latest_wave = 29
+latest_wave_user = 28
+new_entries = [
+    "p1",
+    "p5b",
+    "p11c",
+    "p16c",
+    "p21e",
+] # the waves in which new cohorts were added 
+num_sheets = 5 # number of csv files
