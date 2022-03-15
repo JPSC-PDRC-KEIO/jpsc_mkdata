@@ -41,15 +41,13 @@ class DataFactory:
         dir_ = self.conf.panel_directories[last_year_wave]
         # eg. ["p21abcd","p21e"]
         for d in dir_:
-            dirpath = os.path.join(self.conf.updated_data,
-                                   self.conf.release_dir, d)
+            dirpath = os.path.join(self.conf.updated_data, self.conf.release_dir, d)
             shutil.rmtree(dirpath)
 
         if self.conf.latest_wave == 27:
             dir_lag_lag = self.conf.panel_directories[last_year_wave - 1]
             for d in dir_lag_lag:
-                dirpath = os.path.join(
-                    self.conf.updated_data, self.conf.release_dir, d)
+                dirpath = os.path.join(self.conf.updated_data, self.conf.release_dir, d)
                 shutil.rmtree(dirpath)
 
     def update(self, wave, input_dir, output_dir):
@@ -59,10 +57,7 @@ class DataFactory:
         # el = EditingLists(wave)
         # editing_list = el.editing_list
         u = UpdateData(
-            conf=self.conf,
-            wave=wave,
-            input_dir=input_dir,
-            output_dir=output_dir
+            conf=self.conf, wave=wave, input_dir=input_dir, output_dir=output_dir
         )
         u.update()
 
@@ -78,9 +73,7 @@ class DataFactory:
         """
 
         return self.update(
-            wave=self.conf.latest_wave,
-            input_dir=input_dir,
-            output_dir=output_dir
+            wave=self.conf.latest_wave, input_dir=input_dir, output_dir=output_dir
         )
 
     def make(self):
@@ -95,8 +88,7 @@ class DataFactory:
         print("継続データにエディティングの修正を施します")
         self.mk_update_dir()
         self.del_prev_year_wave()
-        self.update_latest_wave(
-            self.prev_release_data_dir, self.release_data_dir)
+        self.update_latest_wave(self.prev_release_data_dir, self.release_data_dir)
 
 
 class UpdateData:
@@ -141,20 +133,17 @@ class UpdateData:
             msg = "{0}の修正を行います".format(name)
             print(msg)
             # 読み込み元
-            input_path_leaf = "{folder}/{file}.csv".format(
-                folder=name[:-2], file=name)
+            input_path_leaf = "{folder}/{file}.csv".format(folder=name[:-2], file=name)
             # eg. p9/p9_1.csv
 
             input_file_path = os.path.join(self.input_path, input_path_leaf)
             # eg. data/old_data/p21_release/p9/p9_1.csv
             # 一年前リリースディレクトリ
 
-            input_data = pd.read_csv(
-                input_file_path, index_col="ID", na_values=np.nan)
+            input_data = pd.read_csv(input_file_path, index_col="ID", na_values=np.nan)
 
             # 出力先
-            output_path_leaf = "{folder}/{file}.csv".format(
-                folder=name[:-2], file=name)
+            output_path_leaf = "{folder}/{file}.csv".format(folder=name[:-2], file=name)
             output_file_path = os.path.join(self.output_path, output_path_leaf)
             # eg. data/old_data/p21_release/p9/p9_1.csv
             output_data = input_data.copy(deep=True)
@@ -230,9 +219,3 @@ class UpdateData:
 
             # csvファイルへ整数で記入
             output_data.to_csv(output_file_path, mode="w", float_format="%d")
-
-
-if __name__ == "__main__":
-
-    d = DataFactory()
-    d.make()
