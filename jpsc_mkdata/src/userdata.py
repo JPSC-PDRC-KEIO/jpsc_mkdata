@@ -42,7 +42,7 @@ class DataFactory:
         try:
             self.conf.release_user_dir_abs.mkdir(parents=True)
         except FileExistsError as e:
-            print(f"{self.conf.release_dir}を取り除いてください")
+            print(f"{self.conf.release_user_dir_abs}を取り除いてください")
             print(e)
             sys.exit(1)
 
