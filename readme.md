@@ -10,7 +10,7 @@ JPSCデータの作成プログラムパッケージ
 		- 継続データにエディティングの修正を加える
 	- ユーザーデータ
 		- 委員データをもとにデータを作成（基本は1年ラグ）
-		- 地域情報を999999に変換
+		- 地域情報を99999に変換
 		- 都道府県コードのみを抽出し，別途保存
 		- すべてのcsvファイルをマージしたデータ(csv, Apache Parquet)を作成
 - データ整合性のチェック
@@ -41,6 +41,8 @@ JPSCデータの作成プログラムパッケージ
 - データの作成
 	- 委員データ
 		- `./config.toml`の`dir.base`を自身の環境で`jpsc_dataset`を置いている位置に合わせる
+			- パスは絶対パスで記述したほうが確実
+			- 実行環境がWindowsであればディレクトリの区切り記号を `\\` (二重バックスラッシュ)とする
 		- 同　`data_info.latest_wave`にリリースする調査回を記述
 		-  `main.py`を実行
 		- `data/update_data`以下に当該年度csvファイル一式が作成される(`p*_release`)
@@ -64,6 +66,9 @@ JPSCデータの作成プログラムパッケージ
                 - longitudinal.py をrootディレクトリから実行
                 - 不整合のIDは tests/inconsistents 下のCSVファイルに保存
 
+- プログラムの実行
+	- ターミナルで　`\jpsc_mkdata\jpsc_mkdata` へ移動
+	- コマンド `pipenv shell`, `pipenv install` を実行して仮想環境で `main_user_data.py` を実行する
 
 
 ##TODO
