@@ -40,12 +40,12 @@ JPSCデータの作成プログラムパッケージ
 
 - データの作成
 	- 委員データ
-		-`./config.toml`の`dir.base`を自身の環境で`jpsc_dataset`を置いている位置に合わせる
+		- `./config.toml`の`dir.base`を自身の環境で`jpsc_dataset`を置いている位置に合わせる
 		- 同　`data_info.latest_wave`にリリースする調査回を記述
 		-  `main.py`を実行
 		- `data/update_data`以下に当該年度csvファイル一式が作成される(`p*_release`)
 	- ユーザーデータ
-		-`./config.toml`の`dir.base`を自身の環境で`jpsc_dataset`を置いている位置に合わせる
+		- `./config.toml`の`dir.base`を自身の環境で`jpsc_dataset`を置いている位置に合わせる
 		- 同　`data_info.latest_wave_user`にリリースする調査回を記述
 		- 同　`data_info.user_org_wave`に参照する委員データの調査回を記述
 		-  `main_user_data.py`を実行
