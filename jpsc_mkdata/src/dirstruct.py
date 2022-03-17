@@ -14,6 +14,7 @@ class DirStructure:
 
     latest_wave: int  # データの最新年　（e.g. 29）
     latest_wave_user: int  # ユーザーデータの最新年
+    user_org_wave: int  # ユーザーデータのもとになるオリジナルデータ最新年（p_*release）
     fixed_width_data: Path  # 固定長データ（元データ）の格納ディレクトリ
     updated_data: Path  # 新規作成のフルデータ（リリースデータ, csv）の格納ディレクトリ
     old_data: str  # 昨年のリリースデータを格納ディレクトリ
@@ -97,3 +98,12 @@ class DirStructure:
         updated_dir: list[Path] = [prnt_dir / d for d in self.shinki_data_dirs]
 
         return updated_dir
+
+    @property
+    def release_user_dir_abs(self) -> Path:
+        """
+        ユーザーリリースデータの絶対パスを返す　e.g. jpsc_dataset/user_data/p29_release_user
+        """
+
+        abs_dir: Path = self.user_data / self.release_user_dir
+        return abs_dir

@@ -19,10 +19,10 @@ JPSCデータの作成プログラムパッケージ
 	- エディティング修正リスト
 	 
 ## Usage
-- 委員データの作成
+- データの作成
 	- ローデータ（新規データ）の準備
 		- 固定長データ
-			- 中央調査社から納品された最新データを`data/fixed_width_data/p*_release`
+			- 中央調査社から納品された最新データを`jpsc_dataset/data/fixed_width_data/p*_release`
 			の配下のフォルダーに配置
 		- テープフォーマット
 			- アドレス情報と変数名が入った対応するテープフォーマット（xlsx形式）を`data/fixed_width_data/tape_formats`に配置
@@ -35,8 +35,8 @@ JPSCデータの作成プログラムパッケージ
 
 
 - データの作成
-	- ``config.toml``にリリースする調査回(`latest_wave` or `latest_wave_user` )を記述．必要に応じてディレクトリの内容を設定
-	- ルートディレクトリ下でmain.pyを実行
+	- ``config.toml``にリリースする調査回(`latest_wave` or `latest_wave_user` )を記述．もとになる
+	-  main.pyを実行
 	- `products/p*_relesae` 以下に当該年度のリリースCSVファイル一式が作成される（未実装）
 	- `data/update_data`以下に作成されている当該年度CSVファイル一式を使用
 

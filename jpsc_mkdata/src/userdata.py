@@ -1,98 +1,74 @@
-# -*- coding: utf-8 -*-
 """
 ユーザーリリース用データの作成
 """
 import csv
-import os
+import shutil
+import sys
 import pandas as pd
-
-# import src.dirstruct as dirstruct  # 設定全般ファイル
-# import src.dirconfig as dconf  # ディレクトリ設定ファイル
 from pathlib import Path
 from src.dirstruct import DirStructure  # noqa
-
-# sys.path.append(os.getcwd())
-# sys.path.append("../")
-# sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from src.merge import merge as pmerge  # noqa
 
 
-class MakeDir:
-    def __init__(self):
-        self.cwd = os.getcwd()
-        self._org_dir: Path  # = None
-        self._recode_dir: Path  # = None
-        self._pref_dir: Path  # = None
+class DataFactory:
+    """_summary_
+    ユーザーデータ格納ディレクトリの設定 user_data/p_*release_user 以下にoriginal, recoded, pref の3種をつくる
+    """
+
+    def __init__(self, conf: DirStructure) -> None:
+        """_summary_
+
+        :param conf: ディレクトリ設定情報
+        :type conf: DirStructure
+        """
+        self.conf: DirStructure = conf
 
     @property
     def org_dir(self):
-        if not (self._org_dir):
-            print("ディレクトリ名が入力されていません")
-        else:
-            return self._org_dir
-
-    @org_dir.setter
-    def org_dir(self, value):
-        self._org_dir: Path = Path(value).resolve()  # os.path.abspath(value)
-
-    @org_dir.deleter
-    def org_dir(self):
-        del self._org_dir
+        # 元データ格納dir
+        return self.conf.release_user_dir_abs / Path("original")
 
     @property
-    def recode_dir(self):
-        if not (self._recode_dir):
-            print("ディレクトリ名が入力されていません")
-        else:
-            return self._recode_dir
-
-    @recode_dir.setter
-    def recode_dir(self, value):
-        self._recode_dir: Path = Path(value).resolve()  # os.path.abspath(value)
-
-    @recode_dir.deleter
-    def recode_dir(self):
-        del self._recode_dir
+    def recoded_dir(self):
+        # 地域情報をつぶしたデータ格納dir
+        return self.conf.release_user_dir_abs / Path("recoded")
 
     @property
     def pref_dir(self):
-        if not (self._pref_dir):
-            print("ディレクトリ名が入力されていません")
-        else:
-            return self._pref_dir
+        # 都道府県データ格納dir
+        return self.conf.release_user_dir_abs / Path("prefecture")
 
-    @pref_dir.setter
-    def pref_dir(self, value):
-        self._pref_dir: Path = Path(value).resolve()  # os.path.abspath(value)
+    def mkdir(self):
+        try:
+            self.conf.release_user_dir_abs.mkdir(parents=True)
+        except FileExistsError as e:
+            print(f"{self.conf.release_dir}を取り除いてください")
+            print(e)
+            sys.exit(1)
 
-    @pref_dir.deleter
-    def pref_dir(self):
-        del self._pref_dir
+        user_org_wave = "p" + str(self.conf.user_org_wave) + "_release"
+        shutil.copytree(
+            self.conf.updated_data / Path(user_org_wave), self.org_dir
+        )  # releaseオリジナルデータ（委員データ）をコピーしてoriginal に名前を変更
+        shutil.copytree(self.org_dir, self.recoded_dir)  # originalからrecodedにファイル群をコピー
 
-    def make_wave_sheets(self):
+        self.pref_dir.mkdir()  # 都道府県データdir 作成
 
+    def recode(self) -> None:
+        """
+        p*_1.csvの地域情報を99999（9）に置き換え
+        """
         odir: Path = self.org_dir
-        rdir: Path = self.recode_dir
+        rdir: Path = self.recoded_dir
         pdir: Path = self.pref_dir
-        """
-        for root, dirs, files in os.walk(odir):
-            if len(files) > 0:
-                # Q2, Q4は、シート1だけに含まれる。
-                fnames = [i for i in files if "_1.csv" in i]
-                # p*_1.csv が複数個ある場合、ファイルを開いている場合は例外を発生
-                if not len(fnames) == 1:
-                    raise IndexError
-                fname = fnames[0]
-        """
-        p_1csvs = odir.glob("**/*_1.csv")
-        for fname in p_1csvs:
-            # p*フォルダ
-            # waves = os.path.split(root)[1]
-            wave = fname.parent.name
-            print("wave:", wave)
-            recode_dir_wave = rdir / wave  # os.path.join(rdir, waves)
-            data = pd.read_csv(fname.resolve())  # (os.path.join(root, fname))
-            print(fname)
-            if fname in [
+
+        for fname_abs in odir.glob("**/*_1.csv"):
+            data = pd.read_csv(fname_abs)  # (os.path.join(root, fname))
+
+            """
+            p1, p5b, p11c, p16d, p21e は引っ越し情報（P33）もつぶす
+            """
+            if fname_abs.name in [
                 "p1_1.csv",
                 "p5b_1.csv",
                 "p11c_1.csv",
@@ -147,8 +123,12 @@ class MakeDir:
             data["Q4"] = 99999
 
             # ユーザーリリース用データ（地域情報を含まない）の保存
+
+            fname = fname_abs.name
+            wave = fname_abs.parent.name
+            recoded_file_path = rdir / wave / fname
             data.to_csv(
-                recode_dir_wave / fname,
+                recoded_file_path,
                 index=False,
                 quoting=csv.QUOTE_NONE,
                 float_format="%.0f",
@@ -165,19 +145,20 @@ class MakeDir:
                 float_format="%.0f",
             )
 
+    def merge(self) -> None:
+        pmerge(
+            data_dir=self.recoded_dir,
+            save_dir=self.conf.release_user_dir_abs,
+            wave=self.conf.latest_wave_user,
+        )
 
-class DataFactory:
-    def __init__(self, conf):
-        self.d = conf
-        # print(self.d)
+    def make(self) -> None:
+        """
+        self.mkdir と　self.recodeの実行
+        """
+        self.mkdir()
+        self.recode()
 
-    def make(self):
-        m = MakeDir()
-        user_data_dir: Path = self.d.user_data / self.d.release_user_dir
-        org_dir: Path = user_data_dir / Path("original")
-        recode_dir: Path = user_data_dir / Path("recode")
-        pref_dir: Path = user_data_dir / Path("prefecture")
-        m.org_dir = org_dir
-        m.recode_dir = recode_dir
-        m.pref_dir = pref_dir
-        m.make_wave_sheets()
+    def make_merge(self) -> None:
+        self.make()
+        self.merge()

@@ -17,6 +17,7 @@ numpy = "*"
 csvdiff = "*"
 csv-diff = "*"
 openpyxl = "*"
+pyarrow = "*"
 
 [requires]
 python_version = "3.10"

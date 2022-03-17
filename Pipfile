@@ -7,6 +7,8 @@ verify_ssl = true
 epc = "*"
 flake8 = "*"
 autopep8 = "*"
+mypy = "*"
+black = "*"
 
 [packages]
 toml = "*"
@@ -16,6 +18,10 @@ xlrd = "*"
 numpy = "*"
 csv-diff = "*"
 openpyxl = "*"
+types-toml = "*"
 
 [requires]
 python_version = "3.10"
+
+[pipenv]
+allow_prereleases = true
