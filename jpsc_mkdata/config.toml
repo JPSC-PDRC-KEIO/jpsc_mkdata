@@ -4,7 +4,7 @@ title = "JPSC DataSet "
 name = "JPSC data release"
 
 [dir]
-base = "/mnt/d/jpsc_dataset" # jpsc_data一式を置いている自身の環境を設定する
+base = "C:\\****\\*****\\jpsc_dataset" # jpsc_data一式を置いている自身の環境を設定する
 diffs = "diffs"
 [dir.data]
 base = "data"
