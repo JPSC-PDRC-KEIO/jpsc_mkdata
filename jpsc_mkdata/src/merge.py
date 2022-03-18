@@ -25,6 +25,7 @@ def merge(data_dir: Path, save_dir: Path, wave: int) -> None:
 
         pnl_dataset = pd.concat([pnl_dataset, each_data], ignore_index=True)
 
+    pnl_dataset.sort_values(by=["PANEL", "ID"])
     csv_file_name = f"all_{wave}.csv"
     pq_file_name = f"all_{wave}.parquet"
 
