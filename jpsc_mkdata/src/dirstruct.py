@@ -41,6 +41,10 @@ class DirStructure:
         )
         self.release_dir_lag: Path = Path("p" + str(self.latest_wave - 1) + "_release")
         # e.g. p21_release if p22
+        self.release_user_dir_lag: Path = Path(
+            "p" + str(self.latest_wave_user - 1) + "_release_user"
+        )
+        # e.g. p21_release_user if p22
 
     @property
     def panel_directories(self) -> Dict[int, list[Path]]:
@@ -104,6 +108,13 @@ class DirStructure:
         """
         ユーザーリリースデータの絶対パスを返す　e.g. jpsc_dataset/user_data/p29_release_user
         """
-
         abs_dir: Path = self.user_data / self.release_user_dir
+        return abs_dir
+
+    @property
+    def release_user_dir_lag_abs(self) -> Path:
+        """
+        前年ユーザーリリースデータの絶対パスを返す　e.g. jpsc_dataset/user_data/p28_release_user
+        """
+        abs_dir: Path = self.user_data / self.release_user_dir_lag
         return abs_dir

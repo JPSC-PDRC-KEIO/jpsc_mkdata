@@ -31,6 +31,7 @@ JPSCデータの作成プログラムパッケージ
 - データの準備
 	- 委員・ユーザーデータ共通
 		- データセット群[`jpsc_dataset`](#jpsc_datasetの構造)を用意
+		- 上書き禁止．作成する該当リリースデータ（`p*release`）がすでに`jpsc_dataset`内にあれば削除するか名前を変更すること
 	- 委員データ
 		- 固定長データ
 			- 中央調査社から納品された最新データを`jpsc_dataset/data/fixed_width_data/p*_release`の配下のフォルダーに配置
@@ -45,7 +46,7 @@ JPSCデータの作成プログラムパッケージ
 
 - データの作成
 	- 委員・ユーザーデータ共通
-		- ターミナルで　`\jpsc_mkdata\jpsc_mkdata` へ移動
+		- ターミナルで　`/jpsc_mkdata/jpsc_mkdata` へ移動
 		- コマンド `pipenv shell`, `pipenv install` を実行して仮想環境に入る
 		- `./config.toml`の`dir.base`に，自身の環境での`jpsc_dataset`の絶対バスを記述
 			- 実行環境がWindowsであればディレクトリの区切り記号を `\\` (二重バックスラッシュ)とする
@@ -53,16 +54,18 @@ JPSCデータの作成プログラムパッケージ
 	- 委員データ		
 		- `./config.toml`の`data_info.latest_wave`にリリースする調査回を記述
 		-  `main.py`を実行
-		- `data/update_data`以下に当該年度csvファイル一式が作成される(`p*_release`)
+		- `jpsc_dataset/data/update_data`以下に当該年度csvファイル一式が作成される(`p*_release`)
 	- ユーザーデータ
 		- `./config.toml`の`dir.base`の　`data_info.latest_wave_user`にリリースする調査回を記述
 		- 同　`data_info.user_org_wave`に参照する委員データの調査回を記述
 		-  `main_user_data.py`を実行
-		- `data/user_data`以下に当該年度csvファイル一式が作成される(`p*_release`)
+		- [`jpsc_dataset/data/user_data`](#userdataディレクトリ以下)以下に当該年度csvファイル一式が作成される(`p*_release`)
 			- `original`： 参照委員データ（確認用．リリースしないこと）
 			- `recoded`: 地域情報をつぶしたデータ（リリースするデータ）
-			- `pref`: 都道府県データ（学部生にはリリースしない）
-			- `all*.csv`, `all*.parquet`: 　`recoded`一式をマージしたデータ
+			- `prefecture`: 都道府県データ（学部生にはリリースしない）
+			- `merged`: `recoded`一式をマージしたデータ
+				- `all*.csv`: csvフォーマット
+				- `all*.parquet`: Apache Parquetフォーマット
 
 
 - データ整合性のチェック
@@ -89,6 +92,17 @@ JPSCデータの作成プログラムパッケージ
 │   └── p*_release
 └── editing
     └── lists
+```
+### user_dataディレクトリ以下
+
+各年`p*_release_user`があり，その配下に
+```
+.
+├── merged
+├── original
+├── prefecture
+└── recoded
+
 ```
 
 ## TODO

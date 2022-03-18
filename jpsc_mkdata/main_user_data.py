@@ -5,26 +5,13 @@
 都道府県の情報を別ファイルに移して保存
 """
 
-from settings import *
+from settings import *  # main と共通の変数一式を読み込み
 import src.userdata as user
-
-# TODO
-"""
-ログファイルの生成
-
-テストの作成
--データの整合性
--差分チェック
-
-ユーザーデータの分離
--直近1年のデータを除外
--居住地情報の除外
---都道府県情報は別途、作成保存
-
-"""
+import src.userdata_check as user_check
 
 
 if __name__ == "__main__":
-    usr = user.DataFactory(conf=d)
+    # usr = user.DataFactory(conf=d)
     # usr.make()
-    usr.make_merge()
+    # usr.make_merge()
+    user_check.DataCheck(conf=d).check()

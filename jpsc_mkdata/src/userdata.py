@@ -146,9 +146,11 @@ class DataFactory:
             )
 
     def merge(self) -> None:
+        mdir = self.conf.release_user_dir_abs / Path("merged")
+        mdir.mkdir()
         pmerge(
             data_dir=self.recoded_dir,
-            save_dir=self.conf.release_user_dir_abs,
+            save_dir=mdir,
             wave=self.conf.latest_wave_user,
         )
 
