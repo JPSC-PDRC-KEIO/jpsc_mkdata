@@ -1,4 +1,4 @@
-JPSC Data Set
+jpsc_mkdata
 ====
 JPSCデータの作成プログラムパッケージ
 
@@ -21,11 +21,16 @@ JPSCデータの作成プログラムパッケージ
 
 
 - データ関連
-	- 新規データ（固定長txt）直近2年分
-	- エディティング修正リスト
-	 
+	- データセット群[`jpsc_dataset`](#jpsc_datasetの構造)
+		- 委員データ作成の場合は下記を追加：
+			1. 新規データ（固定長txt）直近2年分
+			2. エディティング修正リスト
+
+
 ## Usage
 - データの準備
+	- 委員・ユーザーデータ共通
+		- データセット群[`jpsc_dataset`](#jpsc_datasetの構造)を用意
 	- 委員データ
 		- 固定長データ
 			- 中央調査社から納品された最新データを`jpsc_dataset/data/fixed_width_data/p*_release`の配下のフォルダーに配置
@@ -39,16 +44,18 @@ JPSCデータの作成プログラムパッケージ
 		- 特になし．参照元の委員データが`jpsc_dataset/data/update_data`にあることを確認
 
 - データの作成
-	- 委員データ
-		- `./config.toml`の`dir.base`を自身の環境で`jpsc_dataset`を置いている位置に合わせる
-			- パスは絶対パスで記述したほうが確実
+	- 委員・ユーザーデータ共通
+		- ターミナルで　`\jpsc_mkdata\jpsc_mkdata` へ移動
+		- コマンド `pipenv shell`, `pipenv install` を実行して仮想環境に入る
+		- `./config.toml`の`dir.base`に，自身の環境での`jpsc_dataset`の絶対バスを記述
 			- 実行環境がWindowsであればディレクトリの区切り記号を `\\` (二重バックスラッシュ)とする
-		- 同　`data_info.latest_wave`にリリースする調査回を記述
+
+	- 委員データ		
+		- `./config.toml`の`data_info.latest_wave`にリリースする調査回を記述
 		-  `main.py`を実行
 		- `data/update_data`以下に当該年度csvファイル一式が作成される(`p*_release`)
 	- ユーザーデータ
-		- `./config.toml`の`dir.base`を自身の環境で`jpsc_dataset`を置いている位置に合わせる
-		- 同　`data_info.latest_wave_user`にリリースする調査回を記述
+		- `./config.toml`の`dir.base`の　`data_info.latest_wave_user`にリリースする調査回を記述
 		- 同　`data_info.user_org_wave`に参照する委員データの調査回を記述
 		-  `main_user_data.py`を実行
 		- `data/user_data`以下に当該年度csvファイル一式が作成される(`p*_release`)
@@ -56,6 +63,8 @@ JPSCデータの作成プログラムパッケージ
 			- `recoded`: 地域情報をつぶしたデータ（リリースするデータ）
 			- `pref`: 都道府県データ（学部生にはリリースしない）
 			- `all*.csv`, `all*.parquet`: 　`recoded`一式をマージしたデータ
+
+
 - データ整合性のチェック
 	- nosetests の実行
 		- 継続データについて、今年度リリスデータと前年度との差分が、エディティング修正指示と一致
@@ -66,12 +75,23 @@ JPSCデータの作成プログラムパッケージ
                 - longitudinal.py をrootディレクトリから実行
                 - 不整合のIDは tests/inconsistents 下のCSVファイルに保存
 
-- プログラムの実行
-	- ターミナルで　`\jpsc_mkdata\jpsc_mkdata` へ移動
-	- コマンド `pipenv shell`, `pipenv install` を実行して仮想環境で `main_user_data.py` を実行する
 
+## jpsc_datasetの構造
+```
+.
+├── data
+│   ├── fixed_width_data
+│   ├── old_data
+│   ├── tape_formats
+│   ├── update_data
+│   └── user_data
+├── diffs
+│   └── p*_release
+└── editing
+    └── lists
+```
 
-##TODO
+## TODO
 - [ ] ログファイル作成の自動化
 
 
