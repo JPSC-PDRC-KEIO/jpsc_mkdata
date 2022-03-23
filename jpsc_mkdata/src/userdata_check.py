@@ -68,7 +68,10 @@ class DataCheck:
         """
         self.release_diff_dir.mkdir(exist_ok=True)
 
-    def previous_check(self):
+    def previous_check(self) -> None:
+        """
+        前年ユーザーデータとの差分．変更があったファイルをjson形式で書き出し．
+        """
         pdir = self.release_diff_dir / Path("previous")
         if pdir.exists():
             shutil.rmtree(pdir)
@@ -93,8 +96,15 @@ class DataCheck:
                         mode="w",
                     ) as f:
                         json.dump(diff, f)
+            else:
+                current_path
 
-    def original_check(self):
+    def original_check(self) -> None:
+        """
+        元になる委員データとの差分をとる．
+        1). 地域変数が適切につぶされているか, 2).それ以外の変数に変更が加わっていないかのチェック.
+        不具合があった場合，1）.はp*_resion.csv, 2). はp*_others.csvに書き込む．
+        """
         odir = self.release_diff_dir / Path("original")
         if odir.exists():
             shutil.rmtree(odir)
@@ -107,32 +117,29 @@ class DataCheck:
                 / Path(recoded_path.parent.name)
                 / Path(recoded_path.name)
             )
-            recoded_data = pd.read_csv(recoded_path)
-            org_data = pd.read_csv(org_path)
-            diff = org_data.compare(recoded_data)
-            diff_columns = diff.columns.droplevel(1).unique()
-            print(diff_columns)
-            if any(diff_columns):
-                diff_file_name = recoded_path.stem + ".txt"
-                with open(odir / Path(diff_file_name), "w") as f:
-                    f.write(str(diff_columns))
+            recoded_data: pd.DataFrame = pd.read_csv(recoded_path, index_col="ID")
+            org_data: pd.DataFrame = pd.read_csv(org_path, index_col="ID")
+            diff_df: pd.DataFrame = org_data.compare(recoded_data)
+            diff_columns: pd.Index = diff_df.columns.droplevel(1).unique()
+            if any(diff_columns):  # 委員データとユーザーデータで差がある場合
+                region_vars = ["Q4", "P33C", "P34C", "P35C", "P36C", "P37C"]
+                if any(diff_columns.isin(region_vars)):  # 地域変数のチェック
+                    resion_padded: pd.DataFrame = diff_df[
+                        diff_df.isin(region_vars)
+                    ].iloc[:, diff_df.columns.get_level_values(1) == "other"]
+                    if (
+                        ~(resion_padded % 9 == 0).all().all()
+                    ):  # 地域変数に99999以外の埋め草が入っている場合
+                        diff_region_file = recoded_path.stem + "_resion.csv"
+                        diff_df[~(resion_padded % 9 == 0).all(axis=1)].to_csv(
+                            odir / Path(diff_region_file)
+                        )  # 99999以外が含まれる行のみ書き出し
+                if not all(diff_columns.isin(region_vars)):  # 地域情報以外の変数に変更があった場合
+                    others = set(diff_columns) - set(region_vars)
+                    diff_other_file = recoded_path.stem + "_other.csv"
+                    diff_df[others].to_csv(odir / Path(diff_other_file))
 
     def check(self):
         self.mk_release_diff_dir()
         self.previous_check()
         self.original_check()
-
-    @property
-    def org_dir(self):
-        # 元データ格納dir
-        return self.conf.release_user_dir_abs / Path("original")
-
-    @property
-    def recoded_dir(self):
-        # 地域情報をつぶしたデータ格納dir
-        return self.conf.release_user_dir_abs / Path("recoded")
-
-    @property
-    def pref_dir(self):
-        # 都道府県データ格納dir
-        return self.conf.release_user_dir_abs / Path("prefecture")

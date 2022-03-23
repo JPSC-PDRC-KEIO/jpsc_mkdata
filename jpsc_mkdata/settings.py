@@ -7,7 +7,7 @@ base_dir = Path(config["dir"]["base"])
 data_base_dir = base_dir / Path(config["dir"]["data"]["base"])
 data_dir_toml = config["dir"]["data"]
 editing_dir = base_dir / Path(config["dir"]["editing"]["base"])
-diffs_dir = base_dir / Path(config["dir"]["diffs"])
+diffs_dir = base_dir / Path(config["dir"]["diffs"]["base"])
 data_info = config["data_info"]
 
 d = DirStructure(

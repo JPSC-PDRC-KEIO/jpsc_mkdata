@@ -5,7 +5,7 @@ name = "JPSC data release"
 
 [dir]
 base = "/mnt/d/jpsc_dataset" # jpsc_data一式を置いている自身の環境を設定する e.g. "C:\\****\\*****\\jpsc_dataset"
-diffs = "diffs"
+#diffs = "diffs"
 [dir.data]
 base = "data"
 old_data = "old_data"
@@ -16,7 +16,8 @@ tape_formats = "tape_formats"
 [dir.editing]
 base = "editing/lists"
 file = "panel{wave}エディティングでの修正.xlsx"
-
+[dir.diffs]
+base = "diffs"
 
 [data_info]
 latest_wave = 29
