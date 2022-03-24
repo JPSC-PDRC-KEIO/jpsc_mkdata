@@ -11,7 +11,7 @@ import src.userdata_check as user_check
 
 
 if __name__ == "__main__":
-    # usr = user.DataFactory(conf=d)
+    usr = user.DataFactory(conf=d)
     # usr.make() # ファイルのマージなし
-    # usr.make_merge()
+    usr.make_merge()
     user_check.DataCheck(conf=d).check()
