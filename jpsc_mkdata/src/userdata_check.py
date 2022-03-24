@@ -119,24 +119,25 @@ class DataCheck:
             )
             recoded_data: pd.DataFrame = pd.read_csv(recoded_path, index_col="ID")
             org_data: pd.DataFrame = pd.read_csv(org_path, index_col="ID")
-            diff_df: pd.DataFrame = org_data.compare(recoded_data)
+            diff_df: pd.DataFrame = org_data.compare(recoded_data, keep_equal=True)
             diff_columns: pd.Index = diff_df.columns.droplevel(1).unique()
             if any(diff_columns):  # 委員データとユーザーデータで差がある場合
                 region_vars = ["Q4", "P33C", "P34C", "P35C", "P36C", "P37C"]
                 if any(diff_columns.isin(region_vars)):  # 地域変数のチェック
-                    resion_padded: pd.DataFrame = diff_df[
-                        diff_df.isin(region_vars)
-                    ].iloc[:, diff_df.columns.get_level_values(1) == "other"]
-                    if (
-                        ~(resion_padded % 9 == 0).all().all()
+                    exist_vars = diff_columns[diff_columns.isin(region_vars)]
+                    region_padded: pd.DataFrame = diff_df.loc[:, exist_vars].iloc[
+                        :, diff_df.columns.get_level_values(1).isin(["other"])
+                    ]
+                    if not (
+                        (region_padded % 9 == 0).all().all()
                     ):  # 地域変数に99999以外の埋め草が入っている場合
-                        diff_region_file = recoded_path.stem + "_resion.csv"
-                        diff_df[~(resion_padded % 9 == 0).all(axis=1)].to_csv(
+                        diff_region_file = recoded_path.stem + "_region.csv"
+                        diff_df[~(region_padded % 9 == 0).all(axis=1)].to_csv(
                             odir / Path(diff_region_file)
                         )  # 99999以外が含まれる行のみ書き出し
                 if not all(diff_columns.isin(region_vars)):  # 地域情報以外の変数に変更があった場合
                     others = set(diff_columns) - set(region_vars)
-                    diff_other_file = recoded_path.stem + "_other.csv"
+                    diff_other_file = recoded_path.stem + "_others.csv"
                     diff_df[others].to_csv(odir / Path(diff_other_file))
 
     def check(self):
