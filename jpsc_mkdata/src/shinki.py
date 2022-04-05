@@ -240,7 +240,6 @@ class CSVModified:
         for v in var_lists:
             hour = v + "H"
             minute = v + "M"
-            print(v)
             if v == "Q1232":  # 時間に関して夫婦の会話（Q1232）は1分単位（4桁），他は10分単位（3桁）で入っている
                 df[hour] = np.floor_divide(df[v], 100)
                 df[minute] = df[v] % 100
@@ -284,17 +283,6 @@ class CSVModified:
         """
         updated_dirs: Path = self.dir_struct.updated_data / self.dir_struct.release_dir
         print("居住地の地方公共団体コードを5桁にそろえます")
-        """
-        p_1files = []
-        for dpath, _, fnames in os.walk(updated_dirs):
-            if len(fnames) == 0:
-                continue
-            fname = [dpath/Path(f) for f in fnames if "_1.csv" in f]
-            if not len(fname) == 1:
-                msg = "{dir_} に1枚目のシートが複数含まれています".format(dir_=dpath)
-                raise AssertionError(msg)
-            p_1files = p_1files + fname
-        """
 
         moving_histories = ["P33C", "P34C", "P35C", "P36C", "P37C"]
         # new_entries = [p + "_1" for p in self.dir_struct.new_entries]
@@ -311,23 +299,3 @@ class CSVModified:
                 print("{p}の引越し履歴を5桁にそろえました".format(p=file_path))
             data.to_csv(file_path, index=False, float_format="%.0f")
         return
-
-
-"""
-        for file_path in p_1files:
-            data = pd.read_csv(file_path)
-            print(file_path)
-            data["Q4"] = data["Q4"].map(lambda x: "{0:05d}".format(x))
-
-            # 新規サンプルのデータは引越し履歴の居住地コードも修正
-            file_name, ext = os.path.splitext(os.path.basename(file_path))
-            if file_name in new_entries:
-                for v in moving_histories:
-                    data[v] = data[v].map(
-                        lambda x: "{0:05d}".format(
-                            int(x)) if pd.notnull(x) else x
-                    )
-                print("{p}の引越し履歴を5桁にそろえました".format(p=file_name))
-            data.to_csv(file_path, index=False, float_format="%.0f")
-        return
-"""
