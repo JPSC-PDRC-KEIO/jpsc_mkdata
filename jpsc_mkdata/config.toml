@@ -15,7 +15,7 @@ user_data = "user_data"
 tape_formats = "tape_formats"
 [dir.editing]
 base = "editing/lists"
-file = "panel{wave}エディティングでの修正.xlsx"
+file = "panel{wave}_editing.xlsx"
 [dir.diffs]
 base = "diffs"
 
