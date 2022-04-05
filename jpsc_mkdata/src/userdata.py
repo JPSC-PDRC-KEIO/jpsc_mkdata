@@ -163,7 +163,7 @@ class DataFactory:
 
     def make_merge(self) -> None:
         """
-        make(地域情報つぶし) と　merge（データの結合）の2つを実行 
+        make(地域情報つぶし) と　merge（データの結合）の2つを実行
         """
         self.make()
         self.merge()
